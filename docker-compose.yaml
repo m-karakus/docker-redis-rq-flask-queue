@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "22006:22006"
+    restart: always
+    environment:
+      service_mode : prod
+    depends_on:
+      - my_redis_service
+
+  worker:
+    build: .
+    command: rq worker --url redis://my_redis_service:6379 kwrun_queue
+    depends_on:
+      - my_redis_service
+
+  my_redis_service:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
